@@ -1,4 +1,4 @@
-services:
+﻿services:
   qdrant:
     image: qdrant/qdrant:latest
     ports:
@@ -11,6 +11,27 @@ services:
     ports:
       - "6379:6379"
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+
   api:
     image: python:3.11-slim
     ports:
@@ -20,15 +41,22 @@ services:
     working_dir: /app
     command: >
       bash -c "
-      pip install --no-cache-dir fastapi uvicorn qdrant-client redis sentence-transformers python-multipart &&
+      pip install --no-cache-dir fastapi uvicorn qdrant-client redis sentence-transformers python-multipart prometheus-client boto3 &&
       python -m uvicorn api:app --host 0.0.0.0 --port 8000 --reload
       "
     depends_on:
       - qdrant
       - redis
+      - prometheus
     environment:
       - QDRANT_HOST=qdrant
       - REDIS_HOST=redis
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - DATA_BUCKET=${DATA_BUCKET}
+      - MODEL_BUCKET=${MODEL_BUCKET}
 
 volumes:
   qdrant_data:
+  prometheus_data:
+  grafana_data:
