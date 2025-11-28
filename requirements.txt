@@ -1,0 +1,37 @@
+# Core API
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+
+# Vector DB
+qdrant-client==1.7.3
+
+# Embeddings - FIXED VERSIONS
+sentence-transformers==2.2.2
+torch==2.1.2
+transformers==4.36.2
+
+# Caching
+redis==5.0.1
+
+# Document Processing - MINIMAL
+pypdf==3.17.4
+python-magic-bin==0.4.14  # Windows compatible
+
+# LLM APIs
+anthropic==0.8.1
+openai==1.10.0
+
+# Monitoring
+prometheus-client==0.19.0
+
+# UI
+streamlit==1.30.0
+plotly==5.18.0
+pandas==2.1.4
+
+# Utils
+requests==2.31.0
+aiofiles==23.2.1
